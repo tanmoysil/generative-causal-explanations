@@ -63,7 +63,7 @@ class GenerativeCausalExplainer:
               Nbeta = 50,
               lam = 0.0001,
               causal_obj = 'JOINT_UNCOND',
-              batch_size = 100,
+              batch_size = 32,
               lr = 0.0001,
               b1 = 0.5,
               b2 = 0.999,
@@ -73,8 +73,11 @@ class GenerativeCausalExplainer:
         self.K = K
         self.L = L
         ntrain = X.shape[0]
-        sample_input = torch.from_numpy(X[0]).unsqueeze(0).float().permute(0,3,1,2)
-        M = self.classifier(sample_input.to(self.device))[0].shape[1]
+        #sample_input = torch.from_numpy(X[0]).unsqueeze(0).float().permute(0,3,1,2)
+        sample_input = torch.from_numpy(X).float().to(self.device)
+        M = self.classifier(sample_input.to(self.device)).shape[1] # number of classifier classes
+
+
         self.train_params = {
                  'K'                 : K,
                  'L'                 : L,
@@ -116,7 +119,8 @@ class GenerativeCausalExplainer:
 
             # compute negative log-likelihood
             randIdx = np.random.randint(0, ntrain, batch_size)
-            Xbatch = torch.from_numpy(X[randIdx]).float().permute(0,3,1,2).to(self.device)
+            #Xbatch = torch.from_numpy(X[randIdx]).float().permute(0,3,1,2).to(self.device)
+            Xbatch = torch.from_numpy(X[randIdx]).float().to(self.device)
             z, mu, logvar = self.encoder(Xbatch)
             Xhat = self.decoder(z)
             nll, nll_mse, nll_kld = loss_functions.VAE_LL_loss(Xbatch, Xhat, logvar, mu)
@@ -148,7 +152,7 @@ class GenerativeCausalExplainer:
             debug['loss_nll'][k] = (lam*nll).item()
             debug['loss_nll_mse'][k] = (lam*nll_mse).item()
             debug['loss_nll_kld'][k] = (lam*nll_kld).item()
-            if self.params['debug_print']:
+            if (k + 1) % 100 == 0 & self.params['debug_print']:
                 print("[Step %d/%d] time: %4.2f  [CE: %g] [ML: %g] [loss: %g]" % \
                       (k+1, steps, time.time() - start_time, debug['loss_ce'][k],
                       debug['loss_nll'][k], debug['loss'][k]))

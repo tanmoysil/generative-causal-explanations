@@ -6,27 +6,27 @@ def load_mnist_idx(data_type):
        data_dir = 'datasets/mnist/'
        fd = open(os.path.join(data_dir,'train-images.idx3-ubyte'))
        loaded = np.fromfile(file=fd,dtype=np.uint8)
-       trX = loaded[16:].reshape((60000,28,28,1)).astype(np.float)
+       trX = loaded[16:].reshape((60000,28,28,1)).astype(np.float64)
        fd = open(os.path.join(data_dir,'train-labels.idx1-ubyte'))
        loaded = np.fromfile(file=fd,dtype=np.uint8)
-       trY = loaded[8:].reshape((60000)).astype(np.float)
+       trY = loaded[8:].reshape((60000)).astype(np.float64)
        fd = open(os.path.join(data_dir,'t10k-images.idx3-ubyte'))
        loaded = np.fromfile(file=fd,dtype=np.uint8)
-       teX = loaded[16:].reshape((10000,28,28,1)).astype(np.float)
+       teX = loaded[16:].reshape((10000,28,28,1)).astype(np.float64)
        fd = open(os.path.join(data_dir,'t10k-labels.idx1-ubyte'))
        loaded = np.fromfile(file=fd,dtype=np.uint8)
-       teY = loaded[8:].reshape((10000)).astype(np.float)
+       teY = loaded[8:].reshape((10000)).astype(np.float64)
        trY = np.asarray(trY)
        teY = np.asarray(teY)
        if data_type == "train":
            X = trX[0:50000,:,:,:]
-           y = trY[0:50000].astype(np.int)
+           y = trY[0:50000].astype(np.int64)
        elif data_type == "test":
            X = teX
-           y = teY.astype(np.int)
+           y = teY.astype(np.int64)
        elif data_type == "val":
            X = trX[50000:60000,:,:,:]
-           y = trY[50000:60000].astype(np.int)
+           y = trY[50000:60000].astype(np.int64)
        idxUse = np.arange(0,y.shape[0])
        seed = 547
        np.random.seed(seed)
@@ -71,8 +71,8 @@ def load_fashion_mnist_idx(data_type):
             X = X[4000:,:]
             y = y[4000:]
     X = X.reshape((X.shape[0],28,28,1))        
-    X = X.astype(np.float)
-    y = y.astype(np.int)
+    X = X.astype(np.float64)
+    y = y.astype(np.int64)
     
     idxUse = np.arange(0,y.shape[0])
     seed = 547
@@ -108,20 +108,20 @@ def load_svhn_idx(data_type):
        data_dir = 'datasets/SVHN/'
        if data_type == "train":
            data = sio.loadmat(data_dir + 'train_32x32.mat')
-           X = data['X'].astype(np.float)
-           y = data['y'].astype(np.int)
+           X = data['X'].astype(np.float64)
+           y = data['y'].astype(np.int64)
        elif data_type == "val": 
            data = sio.loadmat(data_dir + 'test_32x32.mat')
            X = data['X']
-           X = X[:,:,:,:10000].astype(np.float)
+           X = X[:,:,:,:10000].astype(np.float64)
            y = data['y']
-           y = y[:10000].astype(np.int)
+           y = y[:10000].astype(np.int64)
        elif data_type == "test": 
            data = sio.loadmat(data_dir + 'test_32x32.mat')
            X = data['X']
-           X = X[:,:,:,10000:].astype(np.float)
+           X = X[:,:,:,10000:].astype(np.float64)
            y = data['y']
-           y = y[10000:].astype(np.int)
+           y = y[10000:].astype(np.int64)
        
        X = X.transpose(3,2,0,1)
        zero_idx = np.where(y == 10)[0]

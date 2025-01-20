@@ -34,7 +34,7 @@ def nonLinGauss_NLL_loss(Xbatch,Xmu,Xcov_vec):
     
 def VAE_LL_loss(Xbatch,Xest,logvar,mu):
     batch_size = Xbatch.shape[0]
-    sse_loss = torch.nn.MSELoss(reduction = 'sum') # sum of squared errors
+    sse_loss = torch.nn.MSELoss(reduction = 'mean') # sum of squared errors
     KLD = 1./batch_size * -0.5*torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
     mse = 1./batch_size * sse_loss(Xest,Xbatch)
     auto_loss = mse + KLD

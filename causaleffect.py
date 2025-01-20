@@ -85,3 +85,4 @@ def joint_uncond_singledim(params, decoder, classifier, device, dim):
     negCausalEffect = -I
     info = {"xhat" : xhat, "yhat" : yhat}
     return negCausalEffect, info
+
